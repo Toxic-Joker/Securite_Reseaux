@@ -538,37 +538,67 @@ APRES
 ## Remédiations
 ```
 
-Voici des propositions de remédiations pour les 7 attaques mises en œuvre :
 1. DHCP Spoofing et Starvation
-   - Activer DHCP Snooping sur les switches pour filtrer les messages DHCP non autorisés
-   - Configurer des ports de confiance (trusted ports) uniquement pour les serveurs DHCP légitimes
-   - Limiter le nombre de requêtes DHCP par seconde sur les ports non fiables
-2. ARP Poisoning/Spoofing/MitM
-   - Utiliser des entrées ARP statiques pour les équipements critiques
-   - Implémenter la détection d'ARP spoofing sur les switches
-   - Activer l'inspection dynamique ARP (DAI) sur les switches
-3. DNS Spoofing
-   - Mettre en place DNSSEC pour authentifier les réponses DNS
-   - Utiliser des serveurs DNS de confiance et sécurisés
-   - Implémenter un filtrage DNS avancé pour détecter les comportements suspects
-4. Exfiltration ICMP
-   - Filtrer ou bloquer le trafic ICMP aux pare-feux si non nécessaire
-   - Limiter la taille des paquets ICMP autorisés
-   - Mettre en place une surveillance du trafic ICMP pour détecter les anomalies
-5. TCP RST Attack
-   - Implémenter des vérifications plus strictes des numéros de séquence TCP
-   - Utiliser des protocoles chiffrés comme TLS pour protéger les connexions TCP
-   - Configurer les pare-feux pour détecter et bloquer les paquets RST suspects
-6. TCP Session Hijacking
-   - Utiliser des protocoles chiffrés (TLS/SSL) pour toutes les communications sensibles
-   - Implémenter une authentification forte et continue des sessions
-   - Utiliser des numéros de séquence TCP aléatoires et imprévisibles
-7. STP Attack
-   - Activer les fonctionnalités de sécurité STP comme BPDU Guard et Root Guard sur les switches
-   - Configurer manuellement les rôles des ports STP pour les liens critiques
-   - Utiliser des protocoles alternatifs comme Rapid PVST+ ou MST qui sont plus résistants aux attaques
 
-Ces remédiations permettent de réduire significativement les risques liés à ces attaques, mais il est important de les combiner avec une surveillance continue du réseau, des mises à jour régulières des équipements et une formation adéquate du personnel IT pour maintenir un niveau de sécurité optimal.
+	IOU1(config)#ip dhcp snooping
+	IOU1(config)#ip dhcp snooping vlan 1-49
+	IOU1(config)#int eth0/1
+	IOU1(config-if)#ip dhcp
+	IOU1(config-if)#ip dhcp sno
+	IOU1(config-if)#ip dhcp snooping trust
+	IOU1(config-if)#ip dhcp snooping limit rate 100
+	IOU1(config-if)#end
+
+2. ARP Poisoning/Spoofing/MitM
+
+	IOU1(config)#arp 10.2.1.254 ca01.16e1.0000 arpa
+	IOU1(config)#ip arp inspection vlan 1-4094
+	IOU1(config)#int eth0/0 
+	IOU1(config-if)#ip arp inspection trust
+
+4. Exfiltration ICMP
+
+	┌─[✗]─[user@parrot]─[~]
+	└──╼ $sudo iptables -A INPUT -p icmp --icmp-type echo-request -m limit --limit 1/s -j ACCEPT
+	┌─[user@parrot]─[~]
+	└──╼ $sudo iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
+	┌─[user@parrot]─[~]
+	└──╼ $
+
+5. TCP RST Attack
+
+	┌─[✗]─[user@parrot]─[~]
+	└──╼ $sudo sysctl -w net.ipv4.tcp_timestamps=1
+	net.ipv4.tcp_timestamps = 1
+
+	┌─[✗]─[user@parrot]─[~]
+	└──╼ $sudo sysctl -w net.ipv4.tcp_fin_timeout=15
+	net.ipv4.tcp_fin_timeout = 15
+	┌─[user@parrot]─[~]
+	└──╼ $sudo sysctl -p
+
+7. STP Attack
+
+	IOU1(config)#spanning-tree portfast bpduguard default
+	IOU1(config)#int range eth0/0-2                      
+	IOU1(config-if-range)#spanning-tree guard root
+	IOU1(config-if-range)#int range eth0/0-2      
+	*Dec  1 21:01:13.936: %SPANTREE-2-ROOTGUARD_CONFIG_CHANGE: Root guard enabled on port Ethernet0/0.
+	*Dec  1 21:01:13.936: %SPANTREE-2-ROOTGUARD_CONFIG_CHANGE: Root guard enabled on port Ethernet0/1.
+	*Dec  1 21:01:13.936: %SPANTREE-2-ROOTGUARD_CONFIG_CHANGE: Root guard enabled on port Ethernet0/2.
+	IOU1(config-if-range)#int range eth1/0-2      
+	IOU1(config-if-range)#spanning-tree guard root
+	IOU1(config-if-range)#
+	*Dec  1 21:01:27.175: %SPANTREE-2-ROOTGUARD_CONFIG_CHANGE: Root guard enabled on port Ethernet1/0.
+	*Dec  1 21:01:27.175: %SPANTREE-2-ROOTGUARD_CONFIG_CHANGE: Root guard enabled on port Ethernet1/1.
+	*Dec  1 21:01:27.176: %SPANTREE-2-ROOTGUARD_CONFIG_CHANGE: Root guard enabled on port Ethernet1/2.
+	IOU1(config-if-range)#int range eth2/0-2      
+	IOU1(config-if-range)#spanning-tree guard root
+	IOU1(config-if-range)#
+	*Dec  1 21:01:34.759: %SPANTREE-2-ROOTGUARD_CONFIG_CHANGE: Root guard enabled on port Ethernet2/0.
+	*Dec  1 21:01:34.759: %SPANTREE-2-ROOTGUARD_CONFIG_CHANGE: Root guard enabled on port Ethernet2/1.
+	*Dec  1 21:01:34.759: %SPANTREE-2-ROOTGUARD_CONFIG_CHANGE: Root guard enabled on port Ethernet2/2.
+
 
 ```
 
